@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import fxmlexercise.completed.SelectorController?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox alignment="TOP_CENTER" fillWidth="false" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxmlexercise.completed.FrameController">
+   <GridPane>
+     <columnConstraints>
+       <ColumnConstraints hgrow="SOMETIMES" />
+       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+     </columnConstraints>
+     <rowConstraints>
+       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+       <RowConstraints vgrow="SOMETIMES" />
+     </rowConstraints>
+      <children>
+               <AnchorPane style="-fx-border-color: black; -fx-border-width: 4; -fx-border-radius: 5;" GridPane.rowIndex="1">
+                     <SelectorController fx:id="leftSelector" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </AnchorPane>
+               <AnchorPane style="-fx-border-color: black; -fx-border-width: 4; -fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <SelectorController fx:id="rightSelector" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </AnchorPane>
+      </children>
+   </GridPane>
+      <HBox alignment="TOP_CENTER" spacing="30.0">
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+      </HBox>
+      <GridPane alignment="TOP_CENTER">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints vgrow="SOMETIMES" />
+          <RowConstraints vgrow="SOMETIMES" />
+        </rowConstraints>
+            <Rectangle fx:id="firstRect" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="50.0" stroke="BLACK" strokeType="INSIDE" width="50.0" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+               </GridPane.margin>
+            </Rectangle>
+            <Rectangle fx:id="secondRect" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="50.0" stroke="BLACK" strokeType="INSIDE" width="50.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+               </GridPane.margin>
+            </Rectangle>
+            <Rectangle fx:id="thirdRect" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="50.0" stroke="BLACK" strokeType="INSIDE" width="50.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+               </GridPane.margin>
+            </Rectangle>
+            <Rectangle fx:id="fourthRect" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="50.0" stroke="BLACK" strokeType="INSIDE" width="50.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+               </GridPane.margin>
+            </Rectangle>
+            <Label fx:id="firstLabel" style="-fx-border-color: black; -fx-border-radius: 5;" text="Color 1">
+               <GridPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </GridPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+            </Label>
+            <Label fx:id="secondLabel" style="-fx-border-color: black; -fx-border-radius: 5;" text="Color 2" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </GridPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+            </Label>
+            <Label fx:id="thirdLabel" style="-fx-border-color: black; -fx-border-radius: 5;" text="Color 3" GridPane.columnIndex="2">
+               <GridPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </GridPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+            </Label>
+            <Label fx:id="fourthLabel" style="-fx-border-color: black; -fx-border-radius: 5;" text="Color 4" GridPane.columnIndex="3">
+               <GridPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </GridPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+            </Label>
+      </GridPane>
+      <HBox alignment="TOP_CENTER" spacing="15.0">
+            <Button fx:id="printLeftButton" minWidth="80.0" mnemonicParsing="false" onAction="#printButtonAction" text="Print Left" />
+            <Button fx:id="printBothButton" minWidth="80.0" mnemonicParsing="false" onAction="#printButtonAction" text="Print Both" />
+            <Button fx:id="printRightButton" minWidth="80.0" mnemonicParsing="false" onAction="#printButtonAction" text="Print Right" />
+         <padding>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+         </padding>
+      </HBox>
+</VBox>
