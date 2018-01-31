@@ -45,13 +45,57 @@ When constructing a meaningful window, `stage.setScene()` is called to set the c
 *Side Note:* Parent is an abstract class, so it needs to be an appropriate concrete subclass, such as Group or Region. If a Group is used, then changes to the window's size won't affect the layout of the scene graph. If a Region is used, changes to the window's size will cause the nodes in the scene graph to be re-laid out as necessary.
 
 #### Properties
+Using Properties in conjunction with Bindings reduces the amount of code necessary for an FXML-defined GUI. When a property is bound to another, changes to one property are automatically reflected in the other. It's possible to create bindings in which only one property changes in response to the other, or bidirectional bindings where changes to either are reflected in both.
 
+Here is an example of a fairly standard definition of a StringProperty:
+```java
+private StringProperty name = new SimpleStringProperty();
+public StringProperty nameProperty() {
+  return name;
+}
+public final String getName() {
+  return name.get();
+}
+public final void setName(String s) {
+  name.set(s);
+}
+```
+The property itself is declared on line 1, and instantiated as a new SimpleStringProperty, a concrete class for StringProperty. 
+On line 2, there's a getter method for the property, which is by convention the name of the property and the word "Property". This returns the property itself, not the value it contains. If you wanted to bind another property to this one, you would call `nameProperty()` to get the property instance, like this: `otherProperty.bind( nameProperty() )`.
+The other two methods are a getter and setter for the value of the property. These are declared final by convention.
+
+Let's pretend that this name property is inside of a controller class for an FXML-defined view containing a TextField. What if we want to bind the name property to that TextField so that it always reflects what the user has typed in? We would bind the name property to the TextField's textProperty. However, declaring the name property in the way that we just did would cause a few problems in this case. 
+- The name property is instantiated when the object is created, but the controller won't have access to the FXML-defined TextField until the FXML file is fully loaded (more on that under "Controllers"). Do we want a property that has to wait around to have a useful value?
+- When propertyA is bound to propertyB via `propertyA.bind(propertyB)`, you can no longer set the value of propertyA. It doesn't make sense to have a value bound to another if the two values can be different. In this case, if the `setName()` method were called, it would throw an Exception.
+- What if the logical name value is changed somewhere else in the program, and we need to apply it to this controller? We could set the value of the TextField's textProperty, which would in turn update the bound name property, but we'd have to keep the TextField public, which might not be safe.
+
+We can solve these problems by tweaking the standard definition a bit:
+```java
+@FXML
+private TextField nameTextField;
+
+private StringProperty name;
+public StringProperty nameProperty() {
+  if (name == null) {
+    name = new SimpleStringProperty();
+    name.bindBidirectional(nameTextField.textProperty());
+  }
+  return name;
+}
+public final String getName() {
+  return nameProperty().get();
+}
+public final void setName(String s) {
+  nameProperty().set(s);
+}
+```
+In this version, the name property isn't instantiated until the first time nameProperty() is called. When it is instantiated, it is immediately bound to the textProperty() of nameTextField (and vice versa, through the bidirectional binding). The insides of the value's getter and setter have changed slightly; instead of referencing `name` directly, they access the value returned by nameProperty(), to make sure that the property is instantiated if it hasn't been already. Because of the bidirectional binding, if `setName()` is called, the value in the TextField is also updated.
 
 ## Creating the FXML Files (Optional)
 There are provided FXML files in `src/main/resources/` that can be used to complete the exercise. However, if you want an extra challenge, or some practice using SceneBuilder, use the following descriptions to create your own. Since this isn't an exercise in design, layout doesn't necessarily matter, as long as the files have the required controls. If you make your own, remember to put them in `java/fxmlexercise/starthere`.
 
 #### selector.fxml
-This file is the simpler of the two. It will need two [TextFields](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TextField.html), two [ColorPickers](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/ColorPicker.html), and a [Button](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Button.html) (all found under "Controls" in the left sidebar of SceneBuilder). Each TextField corresponds to a ColorPicker, so a user can type in a custom name to describe the color they've chosen. The Button will later print the name and value of the selected colors, so the Button's text should say as much.
+This file is the simpler of the two. It will need two [TextFields](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TextField.html), two [ColorPickers](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/ColorPicker.html), and one [Button](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Button.html) (all found under "Controls" in the left sidebar of SceneBuilder). Each TextField corresponds to a ColorPicker, so a user can type in a custom name to describe the color they've chosen. The Button will later print the name and value of the selected colors, so the Button's text should say as much.
 
 #### frame.fxml
 This one is a little trickier. It needs two [AnchorPanes](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/layout/AnchorPane.html) (found under "Containers"), four [Labels](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Label.html) (under "Controls"), four [Rectangles](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/shape/Rectangle.html) (under "Shapes"), and three [Buttons](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Button.html). 
@@ -112,12 +156,12 @@ public class ControllerClass {
 
     public void initialize() {
         button.setOnAction(action -> {
-                System.out.println("You clicked me!");
+                System.out.println("Hello World!");
         });
     }
 }
 ```
-Notice the `initialize()` method. When an FXMLLoader loads the FXML file, it will construct a new instance of the associated controller. Then, once the object is populated with the controls specified in the FXML file, the `initialize()` method will be called. This is your opportunity to apply any settings or behavior not specified in the FXML file to the controls. In this example, the behavior of the button is defined so that it prints "You clicked me!" when pressed.
+Notice the `initialize()` method. When an FXMLLoader loads the FXML file, it will construct a new instance of the associated controller. Then, once the object is populated with the controls specified in the FXML file, the `initialize()` method will be called. This is your opportunity to apply any settings or behavior not specified in the FXML file to the controls. In this example, the behavior of the button is defined so that it prints "Hello World!" when pressed.
 
 Also notice that both the Button attribute and the initialize method are declared as public. If they weren't, the fields wouldn't be visible to the FXMLLoader. However, this can pose some concerns when it comes to information hiding. To make the program a little more secure while keeping the fields visible to FXMLLoader, we can annotate them with the [@FXML](https://docs.oracle.com/javase/8/javafx/api/javafx/fxml/doc-files/introduction_to_fxml.html#fxml_annotation) tag.
 ```java
