@@ -1,9 +1,7 @@
 package fxmlexercise.completed;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -15,7 +13,7 @@ import org.cirdles.commons.util.ResourceExtractor;
 
 import java.io.IOException;
 
-public class SelectorController extends VBox {
+public class CompletedSelectorController extends VBox {
 
     //**********************************************//
     //                   CONTROLS                   //
@@ -91,25 +89,40 @@ public class SelectorController extends VBox {
         bottomColorProperty().set(c);
     }
 
+    private BooleanProperty validValues;
+    public final BooleanProperty validValuesProperty() {
+
+        if (validValues == null) {
+            validValues = new SimpleBooleanProperty();
+
+            validValues.bind(Bindings.and(Bindings.notEqual(topTextField.textProperty(), ""),
+                                          Bindings.notEqual(bottomTextField.textProperty(), "")));
+        }
+        return validValues;
+    }
+    public Boolean hasValidValues() {
+        return validValuesProperty().get();
+    }
+
     //**********************************************//
     //                 CONSTRUCTORS                 //
     //**********************************************//
 
-    public SelectorController() {
+    public CompletedSelectorController() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    new ResourceExtractor(SelectorController.class).extractResourceAsPath("selector.fxml").toUri().toURL()
+                    new ResourceExtractor(CompletedSelectorController.class).extractResourceAsPath("selector.fxml").toUri().toURL()
             );
             loader.setRoot(this);
             loader.setController(this);
             loader.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     //************************************************//
-    //                PRIVATE METHODS                 //
+    //                    METHODS                     //
     //************************************************//
 
     @FXML private void printButtonAction() {
@@ -117,33 +130,7 @@ public class SelectorController extends VBox {
         System.out.println(bottomTextField.getText() + ": " + bottomColorPicker.getValue());
     }
 
-    //***********************************************//
-    //                PUBLIC METHODS                 //
-    //***********************************************//
-
-    @FXML public void initialize() {
-
-        /*
-            The following listeners will disable the print button if either TextField is empty.
-         */
-        topTextField.textProperty().addListener(( (observable, oldValue, newValue) -> {
-            if ( newValue.equals("") ) {
-                printButton.setDisable(true);
-            } else if ( ! bottomTextField.getText().equals("") ) {
-                printButton.setDisable(false);
-            }
-        }));
-        bottomTextField.textProperty().addListener(( (observable, oldValue, newValue) -> {
-            if ( newValue.equals("") ) {
-                printButton.setDisable(true);
-            } else if ( ! topTextField.getText().equals("") ) {
-                printButton.setDisable(false);
-            }
-        }));
-
-        /*
-            Setting the initial disable state of the print button.
-        */
-        printButton.setDisable(topTextField.getText().equals("") || bottomTextField.getText().equals(""));
+    @FXML protected void initialize() {
+        printButton.disableProperty().bind(Bindings.not(validValuesProperty()));
     }
 }

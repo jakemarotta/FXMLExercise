@@ -1,4 +1,4 @@
-package fxmlexercise.starthere;
+package fxmlexercise;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
@@ -30,10 +30,11 @@ public class SelectorController extends VBox {
      */
 
     //************************************************//
-    //                PRIVATE METHODS                 //
+    //                    METHODS                     //
     //************************************************//
 
-    @FXML private void printButtonAction() {
+    @FXML
+    private void printButtonAction() {
 
         /*
             @TODO Print the each color's name and value.
@@ -41,11 +42,8 @@ public class SelectorController extends VBox {
 
     }
 
-    //***********************************************//
-    //                PUBLIC METHODS                 //
-    //***********************************************//
-
-    @FXML public void initialize() {
+    @FXML
+    protected void initialize() {
 
         /*
             @TODO Configure disable state logic for "Print" button.

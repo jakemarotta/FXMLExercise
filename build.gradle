@@ -3,9 +3,6 @@ apply plugin: 'idea'
 apply plugin: 'java'
 
 repositories {
-    jcenter()
-    mavenLocal()
-
     maven {
         url 'https://jitpack.io'
     }
@@ -13,4 +10,20 @@ repositories {
 
 dependencies {
     compile 'com.github.cirdles:commons:0f628cc'
+}
+
+task jarWithDependencies(type: Jar) {
+
+    manifest {
+        attributes(
+                'Implementation-Title': 'FXMLExercise',
+                'Implementation-Version': '0.1',
+                'Built-JDK': System.getProperty('java.version'),
+                'Main-Class': 'fxmlexercise.completed.Main'
+        )
+    }
+
+    baseName = 'fxmlExercise-v0.1'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
