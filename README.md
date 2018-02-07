@@ -150,7 +150,7 @@ Here we have access to both the root node of the scene graph and the controller 
 Calling `load()` from an instance of FXMLLoader is different from using the static `load()`: both the root node of the scene graph and the controller object are saved into an attribute of the FXMLLoader object, so every call to `load()` or `getController()` will return the same object for each method. This is good, in many contexts. But what if you want to load multiple instances from the same FXML file? There are a couple of ways to get around that, both of which are better than just declaring multiple instances of FXMLLoader:
 
 1. Use FXMLLoader's `setControllerFactory()` method to specify a controller factory as a Callback. When a controller factory is set, the FXMLLoader will create a new scene graph and new controller object each time `load()` is called. You can control how the controller object is constructed using the controller factory. For example, it's possible to pass arguments to a custom constructor instead of using the default constructor by specifying them in the controller factory.
-2. Change the FXML and controller class into a custom control class. In this case, the controller class handles the loading of its own FXML file in its constructors. Then, an FXMLLoader isn't even needed outside of the class; you can instantiate it like any other object.
+2. Change the FXML and controller class into a custom control class. In this case, the controller class extends the class of the root node, and handles the loading of its own FXML file in its constructors. Then, an FXMLLoader isn't even needed outside of the class; you can instantiate it like any other object.
 ```java
 CustomControl cc = new CustomControl();
 vBox.getChildren.add(cc);
@@ -179,7 +179,7 @@ private ColorPicker colorPicker;
 }
 ```
 ```html
-// custom-control.fxml
+// CustomControl.fxml
 
 <fx:root type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
   <HBox alignment="CENTER" spacing="15.0">
@@ -198,11 +198,9 @@ private ColorPicker colorPicker;
 ```
 In the custom control's constructor, we create an instance of FXMLLoader. Then, instead of getting the root node and controller from the FXML file, we set the root node and controller to be the newly created object. Finally, a call to `load()` creates the scene graph and injects nodes with an fx:id into the fields we've declared for them.
 
-In the FXML code, there are a few things to notice:
-- The root node of the defined scene graph has the tag `fx:root` instead of a class like `VBox`. 
-
-**not finished
-
+Between the FXML and the Java code, there are a couple of things to notice:
+- The root node of the defined scene graph has the tag **fx:root**. Instead of being defined with a tag for a class like VBox, the type attribute of fx:root is set to the VBox class. This means that while the root node in the FXML is in fact a VBox, Java can effectively treat the root node as a subclass of VBox (which we see in the controller class declaration).
+- The root does not have an fx:controller attribute, but the TextField and ColorPicker both have fx:id attributes that are also defined in CustomControl.java. This works because we set the controller in CustomControl's constructor.
 
 ## Creating the FXML Files (Optional)
 There are provided FXML files in `src/main/resources/` that can be used to complete the exercise. However, if you want an extra challenge, or some practice using SceneBuilder, use the following descriptions to create your own. Since this isn't an exercise in design, layout doesn't necessarily matter, as long as the files have the required controls. If you make your own, remember to put them in `java/fxmlexercise`.
