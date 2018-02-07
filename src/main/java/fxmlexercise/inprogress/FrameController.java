@@ -1,23 +1,26 @@
-package fxmlexercise.completed;
+package fxmlexercise.inprogress;
 
-import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
-public class CompletedFrameController extends VBox {
+import java.io.IOException;
+
+public class FrameController {
 
     //**********************************************//
     //                   CONTROLS                   //
     //**********************************************//
 
     /*
-        Declare FXML-tagged controls.
+        @TODO Declare FXML-tagged controls.
      */
+    @FXML private AnchorPane leftAnchorPane, rightAnchorPane;
 
     @FXML private Label firstLabel, secondLabel, thirdLabel, fourthLabel;
 
@@ -25,16 +28,18 @@ public class CompletedFrameController extends VBox {
 
     @FXML private Button printLeftButton, printBothButton, printRightButton;
 
-    @FXML private CompletedSelectorController leftSelector, rightSelector;
+    private SelectorController leftSelector, rightSelector;
+
 
     //***********************************************//
     //                    METHODS                    //
     //***********************************************//
 
-    @FXML private void printButtonAction(ActionEvent e) {
+    @FXML
+    private void printButtonAction(ActionEvent e) {
 
         /*
-            Print colors' names and values, depending on which "Print" button was pressed.
+            @TODO Print colors' names and values, depending on which "Print" button was pressed.
          */
         if ( e.getSource() == printLeftButton ) {
             System.out.println(leftSelector.getTopColorName() + ": " + leftSelector.getTopColor());
@@ -48,12 +53,31 @@ public class CompletedFrameController extends VBox {
             System.out.println(rightSelector.getTopColorName() + ": " + rightSelector.getTopColor());
             System.out.println(rightSelector.getBottomColorName() + ": " + rightSelector.getBottomColor());
         }
+
     }
 
-    @FXML protected void initialize() {
+    @FXML
+    protected void initialize() {
+        /*
+            @TODO Load selectors from FXML
+        */
+        try {
+            FXMLLoader loaderOne = new FXMLLoader(getClass().getResource("selector.fxml"));
+            Parent rootOne = loaderOne.load();  // load() returns the scene graph as a Node, which must be a Parent
+            this.leftSelector = loaderOne.getController(); // getController() returns the controller object
+            leftAnchorPane.getChildren().add(rootOne);  // add the Node to the AnchorPane
+
+            FXMLLoader loaderTwo = new FXMLLoader(getClass().getResource("selector.fxml"));
+            Parent rootTwo = loaderTwo.load();  // load() returns the scene graph as a Node, which must be a Parent
+            this.rightSelector = loaderTwo.getController(); // getController() returns the controller object
+            rightAnchorPane.getChildren().add(rootTwo);  // add the Node to the AnchorPane
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         /*
-            Bind controls in this controller to the appropriate properties in the selectors' controllers
+            @TODO Bind controls in this controller to the appropriate properties in the selectors' controllers.
          */
         firstLabel.textProperty().bind(leftSelector.topColorNameProperty());
         secondLabel.textProperty().bind(leftSelector.bottomColorNameProperty());
@@ -66,11 +90,8 @@ public class CompletedFrameController extends VBox {
         fourthRect.fillProperty().bind(rightSelector.bottomColorProperty());
 
         /*
-            Configure disable state logic for "Print" buttons.
+            @TODO Configure disable state logic for "Print" buttons.
          */
-        printLeftButton.disableProperty().bind(Bindings.not(leftSelector.textFieldsNotEmptyProperty()));
-        printRightButton.disableProperty().bind(Bindings.not(rightSelector.textFieldsNotEmptyProperty()));
-        printBothButton.disableProperty().bind(Bindings.or(Bindings.not(leftSelector.textFieldsNotEmptyProperty()),
-                                                           Bindings.not(rightSelector.textFieldsNotEmptyProperty())));
+
     }
 }

@@ -30,6 +30,10 @@ public class FrameController {
     protected void initialize() {
 
         /*
+            @TODO Load selectors from FXML
+         */
+
+        /*
             @TODO Bind controls in this controller to the appropriate properties in the selectors' controllers.
          */
 

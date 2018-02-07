@@ -1,4 +1,4 @@
-package fxmlexercise;
+package fxmlexercise.inprogress;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("FXMLExample");
 
-        Parent root = FXMLLoader.load(getClass().getResource("selector.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("frame.fxml"));
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

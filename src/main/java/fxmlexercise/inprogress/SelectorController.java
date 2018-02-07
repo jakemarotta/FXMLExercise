@@ -1,28 +1,23 @@
-package fxmlexercise.completed;
+package fxmlexercise.inprogress;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.cirdles.commons.util.ResourceExtractor;
 
-import java.io.IOException;
-
-public class CompletedSelectorController extends VBox {
+public class SelectorController extends VBox {
 
     //**********************************************//
     //                   CONTROLS                   //
     //**********************************************//
 
     /*
-        Declare FXML-tagged controls.
+        @TODO Declare FXML-tagged controls.
      */
-
     @FXML private TextField topTextField, bottomTextField;
 
     @FXML private ColorPicker topColorPicker, bottomColorPicker;
@@ -34,9 +29,8 @@ public class CompletedSelectorController extends VBox {
     //**********************************************//
 
     /*
-        Declare properties and property methods.
+        @TODO Declare properties and property methods.
      */
-
     private StringProperty topColorName;
     public StringProperty topColorNameProperty() {
         if (topColorName == null) {
@@ -45,10 +39,10 @@ public class CompletedSelectorController extends VBox {
         }
         return topColorName;
     }
-    public final String getTopColorName() {
+    public String getTopColorName() {
         return topColorNameProperty().get();
     }
-    public final void setTopColorName(String s) {
+    public void setTopColorName(String s) {
         topColorNameProperty().set(s);
     }
 
@@ -60,10 +54,10 @@ public class CompletedSelectorController extends VBox {
         }
         return bottomColorName;
     }
-    public final String getBottomColorName() {
+    public String getBottomColorName() {
         return bottomColorNameProperty().get();
     }
-    public final void setBottomColorName(String s) {
+    public void setBottomColorName(String s) {
         bottomColorNameProperty().set(s);
     }
 
@@ -75,10 +69,10 @@ public class CompletedSelectorController extends VBox {
         }
         return topColor;
     }
-    public final Color getTopColor() {
+    public Color getTopColor() {
         return topColorProperty().get();
     }
-    public final void setTopColor(Color c) {
+    public void setTopColor(Color c) {
         topColorProperty().set(c);
     }
 
@@ -90,10 +84,10 @@ public class CompletedSelectorController extends VBox {
         }
         return bottomColor;
     }
-    public final Color getBottomColor() {
+    public Color getBottomColor() {
         return bottomColorProperty().get();
     }
-    public final void setBottomColor(Color c) {
+    public void setBottomColor(Color c) {
         bottomColorProperty().set(c);
     }
 
@@ -117,37 +111,31 @@ public class CompletedSelectorController extends VBox {
     //**********************************************//
 
     /*
-        Only one, actually.
+        @TODO Only one, actually.
      */
-    public CompletedSelectorController() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    new ResourceExtractor(CompletedSelectorController.class).extractResourceAsPath("completed-selector.fxml").toUri().toURL()
-            );
-            loader.setRoot(this);
-            loader.setController(this);
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     //************************************************//
     //                    METHODS                     //
     //************************************************//
 
-    @FXML private void printButtonAction() {
+    @FXML
+    private void printButtonAction() {
+
         /*
-            Print the each color's name and value.
+            @TODO Print the each color's name and value.
          */
         System.out.println(topTextField.getText() + ": " + topColorPicker.getValue());
         System.out.println(bottomTextField.getText() + ": " + bottomColorPicker.getValue());
+
     }
 
-    @FXML protected void initialize() {
+    @FXML
+    protected void initialize() {
+
         /*
-            Configure disable state logic for "Print" button.
+            @TODO Configure disable state logic for "Print" button.
          */
-        printButton.disableProperty().bind(Bindings.not(textFieldsNotEmptyProperty()));
+        printButton.disableProperty().bind( Bindings.not( textFieldsNotEmptyProperty() ) );
+
     }
 }

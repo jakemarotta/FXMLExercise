@@ -15,10 +15,10 @@ public class CompletedMain extends Application {
         primaryStage.setTitle("FXMLExample");
 
         Parent root = FXMLLoader.load(
-                new ResourceExtractor(CompletedMain.class).extractResourceAsPath("frame.fxml").toUri().toURL()
+                new ResourceExtractor(CompletedMain.class).extractResourceAsPath("completed-frame.fxml").toUri().toURL()
         );
 
-        primaryStage.setScene(new Scene(root, 800, 450));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
     }

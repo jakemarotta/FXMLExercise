@@ -12,18 +12,34 @@ dependencies {
     compile 'com.github.cirdles:commons:0f628cc'
 }
 
-task jarWithDependencies(type: Jar) {
+task exerciseJar(type: Jar) {
 
     manifest {
         attributes(
                 'Implementation-Title': 'FXMLExercise',
-                'Implementation-Version': '0.1',
+                'Implementation-Version': '1.0',
+                'Built-JDK': System.getProperty('java.version'),
+                'Main-Class': 'fxmlexercise.Main'
+        )
+    }
+
+    baseName = 'FXMLExercise-v1.0'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task completedJar(type: Jar) {
+
+    manifest {
+        attributes(
+                'Implementation-Title': 'CompletedFXMLExercise',
+                'Implementation-Version': '1.0',
                 'Built-JDK': System.getProperty('java.version'),
                 'Main-Class': 'fxmlexercise.completed.Main'
         )
     }
 
-    baseName = 'fxmlExercise-v0.1'
+    baseName = 'CompletedFXMLExercise-v1.0'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
