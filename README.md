@@ -446,7 +446,7 @@ public final void setColorName1(String s) {
 5. Repeat for each TextField, each ColorPicker, and the Button: click on the control, go to the "Code" menu that appears in the right side of SceneBuilder, and in the text field labelled "fx:id", type the name of the attribute for that control in the controller class. For example, if you declared the Button attribute as "printButton", you would put "printButton" in the text field. In addition, for the Button, you'll want to put "printButtonAction" in the text field labelled "On Action". This will make it so the `printButtonAction()` method is called each time the Button is pressed.
 
 
-6. Save the file, and try to build and run the program. Mess aroung with the controls, make sure that the button prints the correct information when pressed, etc.
+6. Save the file, and try to build and run the program. Mess around with the controls, make sure that the button prints the correct information when pressed, etc.
 
 
 7. Now, we're going to make the selector a bit more responsive. Back in SelectorController.java, add a BooleanProperty called `textFieldsEmpty`, along with a property getter and a value getter. After you construct the SimpleBooleanProperty, use the `Bindings.and()` and `Bindings.equal()` methods to bind `textFieldsEmpty` in such a way that the value is true if either TextField is empty. We don't need a setter for this property, because it's completely dependent on the states of both TextFields. There isn't a logical case in which we would need to set this value programmatically.
@@ -694,18 +694,18 @@ protected void initialize() {
   */
   
 //        try {
-//            FXMLLoader loaderOne = new FXMLLoader(getClass().getResource("selector.fxml"));
+//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("selector.fxml"));
 //
-//            Parent root = loaderOne.load();  // load() returns the scene graph as a Node, which must be a Parent
-//            this.leftSelector = loaderOne.getController(); // getController() returns the controller object
-//            leftAnchorPane.getChildren().add(root);  // add the Node to the AnchorPane
+//            Parent root = fxmlLoader.load();  // load() returns the scene graph as a Node, which must be a Parent
+//            this.selectorOne = fxmlLoader.getController(); // getController() returns the controller object
+//            anchorPaneOne.getChildren().add(root);  // add the Node to the AnchorPane
 //
-//            loaderOne.setRoot(null);
-//            loaderOne.setController(null);
+//            fxmlLoader.setRoot(null);
+//            fxmlLoader.setController(null);
 //
-//            root = loaderOne.load();  // load() returns the scene graph as a Node, which must be a Parent
-//            this.rightSelector = loaderOne.getController(); // getController() returns the controller object
-//            rightAnchorPane.getChildren().add(root);  // add the Node to the AnchorPane
+//            root = fxmlLoader.load();  // load() returns the scene graph as a Node, which must be a Parent
+//            this.selectorTwo = fxmlLoader.getController(); // getController() returns the controller object
+//            anchorPaneTwo.getChildren().add(root);  // add the Node to the AnchorPane
 //
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
