@@ -39,9 +39,9 @@ public class CompletedSelectorController extends VBox {
 
     private StringProperty topColorName;
     public StringProperty topColorNameProperty() {
-        if (topColorName == null) {
+        if ( topColorName == null ) {
             topColorName = new SimpleStringProperty();
-            topColorName.bindBidirectional(topTextField.textProperty());
+            topColorName.bindBidirectional( topTextField.textProperty() );
         }
         return topColorName;
     }
@@ -54,9 +54,9 @@ public class CompletedSelectorController extends VBox {
 
     private StringProperty bottomColorName;
     public StringProperty bottomColorNameProperty() {
-        if (bottomColorName == null) {
+        if ( bottomColorName == null ) {
             bottomColorName = new SimpleStringProperty();
-            bottomColorName.bindBidirectional(bottomTextField.textProperty());
+            bottomColorName.bindBidirectional( bottomTextField.textProperty() );
         }
         return bottomColorName;
     }
@@ -69,9 +69,9 @@ public class CompletedSelectorController extends VBox {
 
     private ObjectProperty<Color> topColor;
     public ObjectProperty<Color> topColorProperty() {
-        if (topColor == null) {
+        if ( topColor == null ) {
             topColor = new SimpleObjectProperty<>();
-            topColor.bindBidirectional(topColorPicker.valueProperty());
+            topColor.bindBidirectional( topColorPicker.valueProperty() );
         }
         return topColor;
     }
@@ -84,9 +84,9 @@ public class CompletedSelectorController extends VBox {
 
     private ObjectProperty<Color> bottomColor;
     public ObjectProperty<Color> bottomColorProperty() {
-        if (bottomColor == null) {
+        if ( bottomColor == null ) {
             bottomColor = new SimpleObjectProperty<>();
-            bottomColor.bindBidirectional(bottomColorPicker.valueProperty());
+            bottomColor.bindBidirectional( bottomColorPicker.valueProperty() );
         }
         return bottomColor;
     }
@@ -97,19 +97,19 @@ public class CompletedSelectorController extends VBox {
         bottomColorProperty().set(c);
     }
 
-    private BooleanProperty textFieldsNotEmpty;
-    public final BooleanProperty textFieldsNotEmptyProperty() {
+    private BooleanProperty textFieldEmpty;
+    public final BooleanProperty textFieldEmptyProperty() {
 
-        if (textFieldsNotEmpty == null) {
-            textFieldsNotEmpty = new SimpleBooleanProperty();
+        if (textFieldEmpty == null ) {
+            textFieldEmpty = new SimpleBooleanProperty();
 
-            textFieldsNotEmpty.bind(Bindings.and(Bindings.notEqual(topTextField.textProperty(), ""),
-                                                 Bindings.notEqual(bottomTextField.textProperty(), "")));
+            textFieldEmpty.bind(Bindings.or(Bindings.equal(topTextField.textProperty(), "" ),
+                                            Bindings.equal( bottomTextField.textProperty(), "" ) ) );
         }
-        return textFieldsNotEmpty;
+        return textFieldEmpty;
     }
-    public Boolean textFieldsNotEmpty() {
-        return textFieldsNotEmptyProperty().get();
+    public Boolean textFieldEmpty() {
+        return textFieldEmptyProperty().get();
     }
 
     //**********************************************//
@@ -140,14 +140,14 @@ public class CompletedSelectorController extends VBox {
         /*
             Print the each color's name and value.
          */
-        System.out.println(topTextField.getText() + ": " + topColorPicker.getValue());
-        System.out.println(bottomTextField.getText() + ": " + bottomColorPicker.getValue());
+        System.out.println( topTextField.getText() + ": " + topColorPicker.getValue() );
+        System.out.println( bottomTextField.getText() + ": " + bottomColorPicker.getValue() );
     }
 
     @FXML protected void initialize() {
         /*
             Configure disable state logic for "Print" button.
          */
-        printButton.disableProperty().bind(Bindings.not(textFieldsNotEmptyProperty()));
+        printButton.disableProperty().bind(textFieldEmptyProperty() );
     }
 }

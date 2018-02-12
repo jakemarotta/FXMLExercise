@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root alignment="TOP_CENTER" type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_CENTER" type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
       <HBox alignment="CENTER" spacing="15.0">
             <TextField fx:id="topTextField" minHeight="25.0" minWidth="150.0" promptText="Color Name">
                <HBox.margin>

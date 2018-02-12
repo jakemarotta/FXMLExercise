@@ -12,7 +12,7 @@ public class CompletedMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        primaryStage.setTitle("FXMLExample");
+        primaryStage.setTitle("FXMLExercise");
 
         Parent root = FXMLLoader.load(
                 new ResourceExtractor(CompletedMain.class).extractResourceAsPath("completed-frame.fxml").toUri().toURL()
