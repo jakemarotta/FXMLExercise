@@ -1,5 +1,7 @@
 # FXML Exercise - Instructions
-This exercise demonstrates the use of FXML files within a JavaFX application, focusing on writing controller classes. Some familiarity with JavaFX controls and SceneBuilder is assumed. 
+This exercise demonstrates the use of FXML files within a JavaFX application, focusing on writing controller classes for FXML-defined views.  It is not an overall tutorial for JavaFX. It was written to exemplify some of the FXML use cases that collaborators on the [Topsoil project](https://github.com/CIRDLES/Topsoil) may run into. Some familiarity with JavaFX, its standard controls, and SceneBuilder is assumed.
+
+If you aren't familiar with JavaFX, or some of the controls mentioned, Jenkov Aps has a great [JavaFX Tutorial](http://tutorials.jenkov.com/javafx/index.html) that is more in-depth on JavaFX itself, scene graphs, and many commonly-used controls. They also have a number of [other tutorials](http://tutorials.jenkov.com) related to Java, build tools, distributed systems, and more.
 
 ## Contents
 - [Requirements](#requirements)
