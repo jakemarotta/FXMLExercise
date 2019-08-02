@@ -1,25 +1,22 @@
 # FXML Exercise - Instructions
-This exercise demonstrates the use of FXML files within a JavaFX application, focusing on writing controller classes for FXML-defined views.  It is not an overall tutorial for JavaFX. It was written to exemplify some of the FXML use cases that collaborators on the [Topsoil project](https://github.com/CIRDLES/Topsoil) may run into. Some familiarity with JavaFX, its standard controls, and SceneBuilder is assumed.
+This exercise demonstrates the use of FXML files within a JavaFX application, focusing on writing controller classes for FXML-defined scenes.  It is not an overall tutorial for JavaFX. It was written to exemplify some of the FXML use cases that collaborators on the [Topsoil project](https://github.com/CIRDLES/Topsoil) may run into. Some familiarity with JavaFX, its standard controls, and SceneBuilder is assumed.
 
 If you aren't familiar with JavaFX, or some of the controls mentioned, Jenkov Aps has a great [JavaFX Tutorial](http://tutorials.jenkov.com/javafx/index.html) that is more in-depth on JavaFX itself, scene graphs, and many commonly-used controls. They also have a number of [other tutorials](http://tutorials.jenkov.com) related to Java, build tools, distributed systems, and more.
 
 ## Contents
 - [Requirements](#requirements)
-- [Setup](#setup)
-  - [Using Gradle](#gradle)
 - [Project Structure](#structure)
 - [Background](#background)
   - [Declaring JavaFX Properties](#properties)
-  - [Bindings](#bindings)
+    - [Bindings](#bindings)
     - [Binding Different Values](#bindDiff)
-    - [Binding Controls](#bindControls)
   - [Scene Graphs](#sceneGraphs)
-  - [Controllers](#controllers)
   - [FXMLLoader](#fxmlLoader)
     - [Calling FXMLLoader.load()](#staticLoad)
     - [Using an Instance of FXMLLoader](#instanceLoad)
+  - [Controllers](#controllers)
     - [Creating an FXML-defined Custom Control](#customControl)
-
+    - [Binding Controls](#bindControls)
 - [The Actual Exercise](#theExercise)
   - [Creating the FXML Files](#createFXML)
     - [selector.fxml](#selectorInfo)
@@ -35,52 +32,58 @@ If you aren't familiar with JavaFX, or some of the controls mentioned, Jenkov Ap
 ## <a name="requirements"></a>Requirements
 - [Java 8 SDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 - [JavaFX SceneBuilder](http://www.oracle.com/technetwork/java/javafxscenebuilder-1x-archive-2199384.html) (Alternative version available from [Gluon](http://gluonhq.com/products/scene-builder/))
-- [Project Files](https://github.com/marottajb/FXMLExercise)
-
-An IDE is heavily recommended, as it can simplify building and running the project with Gradle. I'm using [IntelliJ](https://www.jetbrains.com/idea/), and have not tested this exercise in other Java IDEs.
-
-## <a name="setup"></a>Setup
-Import the project FXMLExercise into an IDE. If your IDE supports importing as a Gradle project, do so. Most likely, you won't have deal with Gradle past this point. However, if you've decided to brave the following without using an IDE, or you need a refresher on basic Gradle commands, there's this:
-
-#### <a name="gradle"></a>Using Gradle
-You don't have to have Gradle on your computer in order to follow the exercise. The project has an included Gradle wrapper, which can be executed from the command line with one of two files in the root directory of the project: gradlew or gradlew.bat (depending on your OS). Some commands to know:
-- `./gradlew build` - This will download any missing dependencies and build the project files, without running them.
-  - The `--refresh-dependencies` flag will ask Gradle to re-download the project dependencies, which is a good go-to solution if any are giving you trouble. 
-- `./gradlew run` - This will run the main class of the project, which is `fxmlexercise.Main`.
-- `./gradlew runCompleted` - This is not a built-in Gradle task, I specified it in the `build.gradle` file. It runs the finished version of the project found in `fxmlexercise.completed`.
-
-I haven't tried going through the exercise without IntelliJ (IDE of choice) because I'm not a masochist, so if you run into any problems, let me know so I can fix/mention them.
-
-## <a name="structure"></a>Project Structure
-The project files are organized in a [Maven-like structure](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html). There is a directory called `gradle` that contains the files for the project's Gradle wrapper, as well as scripts for executing Gradle commands, but since Gradle isn't the focus of this exercise, we'll only be looking at the `src` directory:
-```
-- [src]
-    - [main]
-        - [java]
-            - *source code files*
-        - [resources]
-            - *resource files*
-```
-- The `src` directory serves as the root for all sources and tests.
-  - `main` holds the code related to the application itself, not test code. If there were tests in this project, there would be another directory at this level called `test` for holding test code.
-      - `java` contains all of the Java code for the application itself.
-      - `resources` contains any resources that the application source code requires. This is where the FXML files will go.
-
-The package structure of `java` is mirrored in `resources`. For example, if a file `Foo.java` located in `src/main/java/this/directory/` needs a resource file `bar.fxml`, the apropriate location for the resource file would be `src/main/resources/this/directory`. The package for both of these files would be `this.directory`.
-
-In this project, there is a single directory inside both `java` and `resources`, `fxmlexercise`, which contains incomplete starter files for this exercise and a subdirectory, `fxmlexercise/completed/`, which contains finished solutions.
 
 ## <a name="background"></a>Background
-As mentioned, some familiarity with JavaFX controls is assumed. However, there are some classes and concepts that are important enough to mention in detail here. For a much more in-depth, official coverage of topics related to FXML, see Oracle's [*Introduction to FXML*](https://docs.oracle.com/javase/8/javafx/api/javafx/fxml/doc-files/introduction_to_fxml.html).
+This section is a very brief overview of certain concepts that are necessary for the exercise. For a much more in-depth, official coverage of topics related to FXML, see Oracle's [*Introduction to FXML*](https://docs.oracle.com/javase/8/javafx/api/javafx/fxml/doc-files/introduction_to_fxml.html).
 
-Code given in this section may not be related to the exercise itself, so don't worry about keeping track of it past understanding the demonstrated concept. The vast majority is made-up with generic names.
+### <a name="properties"></a>JavaFX Properties
 
-### <a name="properties"></a>Declaring JavaFX Properties
-Using Properties in conjunction with Bindings reduces the amount of code necessary for an FXML-defined GUI. 
+A JavaFX `Property` can be used to model a value that may be related to other values, or to trigger certain behaviors when the value is changed. The property wraps the value, and exposes methods for binding the value to the value of another property, or for adding change listeners. As a very basic example, consider an object of class `Nametag` that has a String `name`, and an object of class `Employee` that has a String `preferredName`. Ideally, we want the name on the nametag to match the preferred name of the employee that's associated with it, so let's say that the value of both of these properties is "Sam". If one day, the employee decides to start going by a different name, the name on their nametag should also change. We might have code like this:
+```java
+class Employee {
+  
+  private String preferredName;
+  private Nametag nametag;
+  
+  // ...
+  
+  public void changePreferredName(String name) {
+    this.preferredName = name;
+    this.nametag.setName(name);
+  }
+}
+```
+Using this approach, any time we set the preferred name of the Employee, we also have to remember set the name of the Nametag. Alternatively, we could use JavaFX properties:
+<a name="addressExample"></a>```java
+class Employee {
+
+  private StringProperty preferredName;
+  private Nametag nametag;
+  
+  public Employee(String name) {
+    this.preferredName.set(name);
+    this.nametag = new Nametag();
+    
+    this.nametag.nameProperty().bind(this.preferredName);
+  }
+  
+  // ...
+  
+  public void changePreferredName(String name) {
+    this.preferredName.set(name);
+  }
+}
+```
+The line `this.nametag.nameProperty().bind(this.preferredName);` *binds* the value of the Nametag's name property to the value of the Employee's preferred name property. Whenever the value of the preferred name property changes, the other property will automatically change to match it.
+
+Property binding is used heavily with JavaFX controls. For example, if we have a TextField that represents the name of a Nametag, we could bind the Nametag's name to the value of the TextField like this:
+```java
+nametag.nameProperty().bind(textField.textProperty());
+```
 
 Here is an example of a fairly standard definition of a StringProperty:
 ```java
-private StringProperty address = new SimpleStringProperty();
+private StringProperty address = new SimpleStringProperty("123 Example St");
 public StringProperty addressProperty() {
   return address;
 }
@@ -91,13 +94,17 @@ public final void setAddress(String s) {
   address.set(s);
 }
 ```
-The property itself is declared and instantiated as a new SimpleStringProperty, a concrete class for StringProperty. 
+The property itself is declared and instantiated as `address`, with an initial value of "123 Example St". Next, there's a method that returns the property instance, which, by convention, is the name of the property followed by "Property". Then, a getter method for the value of the property, and finally, a setter method for the value of the property.
 
-Next, there's a getter method for the property, which is, by convention, the name of the property and the word "Property". This returns the property itself, not the value it contains.
+Any Property can be made read-only by returning the corresponding ReadOnly class:
+```java
+private StringProperty address = new SimpleStringProperty("123 Example St");
+public ReadOnlyStringProperty addressProperty() {
+  return address;
+}
+```
 
-The other two methods are a getter and setter for the value of the property. These are declared final by convention.
-
-### <a name="bindings"></a>Bindings
+#### <a name="bindings"></a>Types of Bindings
 There are two basic ways to bind a property to another property:
 ```java
 private ObjectProperty<Color> propertyA = new SimpleObjectProperty();
@@ -108,12 +115,12 @@ public static void bindProperties() {
   p2.bindBidirectional(p1); // both propertyA and propertyB reflect changes made to each other
 }
 ```
-`propertyA` and `propertyB` above are both ObjectProperties with values of type Color. If we want `propertyB` to always have the same value as `propertyA`, we can simply say `propertyB.bind(propertyA)`. This has three notable effects:
+`propertyA` and `propertyB` above are both ObjectProperties with values of type Color. If we want `propertyB` to always have the same value as `propertyA`, we can simply write `propertyB.bind(propertyA)`. This has three notable effects:
 1. The value of `propertyB` is set to the current value of `propertyA`.
 2. Any further changes made to the value of `propertyB` will also be made to that of `propertyA`.
 3. Changes to the value of `propertyA` are no longer allowed. It doesn't make sense to have a value bound to another if the two values can be made different.
 
-Alternatively, we can say `propertyB.bindBidirectional(propertyA)`, after which:
+We can also write `propertyB.bindBidirectional(propertyA)`, after which:
 1. Like above, the value of `propertyB` is set to the current value of `propertyA`.
 2. Any further changes made to the value of `propertyB` will also be made to that of `propertyA`.
 3. Any further changes made to the value of `propertyA` will also be made to that of `propertyB`.
@@ -132,141 +139,15 @@ DoubleProperty partOne = new SimpleDoubleProperty(12.7);
 DoubleProperty partTwo = new SimpleDoubleProperty(68.1);
 DoubleProperty sum = new SimpleDoubleProperty();
 
-sum.bind( Bindings.add(partOne, partTwo) ); // sum will always have the value of partOne.get() + partTwo.get()
+sum.bind( Bindings.add(partOne, partTwo) ); // sum will always have a value of partOne.get() + partTwo.get()
 ```
-
-#### <a name="bindControls"></a>Binding Controls
-Let's pretend that the address property that we declared earlier is inside of a controller class for an FXML-defined view containing a TextField. What if we want to bind the address property to that TextField so that it always reflects what the user has typed in? We would bind the address property to the TextField's textProperty. However, trying to bind the address property, as it's defined above, would cause a few problems in this case:
-- The address property is instantiated when the object is constructed, but the controller won't have access to the FXML-defined TextField until the FXML document is fully loaded (more on that under "Controllers"). Do we want a property that has to wait around to have a useful value?
-- When propertyA is bound to propertyB via `propertyA.bind(propertyB)`, you can no longer set the value of propertyA. If the `setName()` method were called, it would throw an Exception, because a change to the address propery would cause it to deviate from the value that it's supposed to have.
-- What if the logical address value is changed somewhere else in the program, and we need to apply it to this controller? We could set the value of the TextField's textProperty, which would in turn update the bound address property, but we'd have to keep the TextField public, which might not be safe.
-
-<a name="propertyControl"></a>We can solve these problems by tweaking the standard definition a bit:
-```java
-@FXML
-private TextField addressTextField;
-
-private StringProperty address;
-public StringProperty addressProperty() {
-  if (address == null) {
-    address = new SimpleStringProperty();
-    address.bindBidirectional(addressTextField.textProperty());
-  }
-  return address;
-}
-public final String getAddress() {
-  return addressProperty().get();
-}
-public final void setAddress(String s) {
-  addressProperty().set(s);
-}
-```
-In this version, the address property isn't instantiated until the first time `addressProperty()` is called. When it is instantiated, it is immediately bound to the textProperty() of `addressTextField` (and vice versa, through the bidirectional binding). The insides of the value's getter and setter have changed slightly; instead of referencing `address` directly, they access the value returned by `addressProperty()`, to make sure that the property is instantiated if it hasn't been already. Because of the bidirectional binding, if `setName()` is called, the value in the TextField is also updated.
-
-Now our controller has a property that always reflects the value of a control, and a collection of methods for accessing, binding, and changing the value of that control, all while keeping that control private.
-
-### <a name="sceneGraphs"></a>Scene Graphs
-When we write FXML, what we are doing is defining a hierarchy of JavaFX Nodes. Some terminology:
-
-- A [Stage](https://docs.oracle.com/javase/8/javafx/api/javafx/stage/Stage.html) is similar to a JFrame in Java Swing. It is the top-most container in JavaFX, and acts as a program window. The primary Stage of a JavaFX Application is constructed by the platform (see the parameter "primaryStage" of `Main.start()`).
-- Each Stage displays a [Scene](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Scene.html), which itself contains all of the content for a scene graph.
-- A JavaFX [scene graph](https://docs.oracle.com/javafx/2/scenegraph/jfxpub-scenegraph.htm) is a set of tree data structures in which every item is a Node. A Node can be a "root" node (the Node has no "parent"), a "branch" node (the Node has one or more children), or a "leaf" node (the Node has no children).
-- [Node](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html) is the base class for all scene graph objects, including containers, controls, shapes, etc.
-- [Parent](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Parent.html) is a subclass of Node which can have child nodes.
-
-When constructing a meaningful window, `stage.setScene()` is called to set the content of a Stage to a particular scene graph. A Scene instance is constructed with a root node, which must be a Parent. For example, you might have created an FXML file where the outermost container is a VBox. The VBox would be the root node of the scene graph, and the tree would branch through all of the children of the VBox, and their children, and so forth, until it reaches the basic shapes which have no child Nodes of their own.
-
-*Side Note:* Parent is an abstract class, so it needs to be an appropriate concrete subclass, such as Group or Region. If a Group is used, then changes to the window's size won't affect the layout of the scene graph. If a Region is used, changes to the window's size will cause the nodes in the scene graph to be re-laid out as necessary.
-
-Most of the standard JavaFX controls are composed of many child nodes that determine how they act, what they look like, etc. Any Node in a scene graph can be expressed as a scene graph in which that Node is the root. So, when you add a Node A as a child of another Node B, what you're doing is adding the scene graph with A as its root into the scene graph with B as its root.
-
-### <a name="controllers"></a>Controllers
-Defining a scene graph through FXML only gives us some nice-looking controls with their default behavior. If you want to be able to programmatically define the behavior for or change the appearance of any of the controls, you can write a controller class. A controller class has fields that are injected with Nodes once an FXML document is loaded, based on their corresponding `fx:id`. For example, we might have an FXML file like this:
-
-*controller-class.fxml*
-```xml
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.ControllerClass">
-  <children>
-    <Button fx:id="button" text="Hello World"/>
-  </children>
-</VBox>
-```
-On the first line, the `fx:controller` attribute of the root node (more on that [later](#fxmlLoader)) tells the FXMLLoader to use an instance of ControllerClass as a controller. The root node's child Button has its `fx:id` attribute set to the name of a corresponding attribute of the controller class:
-
-*ControllerClass.java*
-```java
-package org.example;
-
-public class ControllerClass {
-    public Button button;
-
-    public void initialize() {
-        button.setOnAction(action -> {
-                System.out.println("Hello World!");
-        });
-    }
-}
-```
-Notice the `initialize()` method. This is called by an FXMLLoader once it is finished injecting Nodes into the controller. This is your opportunity to apply any settings or behavior not specified in the FXML file to the controls. In this example, the behavior of the button is defined so that it prints "Hello World!" when pressed.
-
-Unless otherwise specified, the FXMLLoader will use the default constructor of a controller cass. It's important to note that the constructor is called *before* the initialize method, so any attributes that correspond to FXML-defined controls (such as "button") haven't been loaded by the time the constructor is called, and therefore can't be referenced from inside the constructor. Wait to interact with any FXML-defined attributes until the `initialize()` method.
-
-We've declared both the Button attribute and the initialize method as public. If they weren't, the fields wouldn't be visible to the FXMLLoader. However, this can pose some concerns when it comes to information hiding. To make the things a little more secure, while keeping the fields visible to FXMLLoader, we can annotate them with the [`@FXML`](https://docs.oracle.com/javase/8/javafx/api/javafx/fxml/doc-files/introduction_to_fxml.html#fxml_annotation) tag.
-
-*ControllerClass.java*
-```java
-package org.example;
-
-public class ControllerClass {
-    @FXML
-    private Button button;
-
-    @FXML
-    protected void initialize() {
-        button.setOnAction(action -> {
-                System.out.println("Hello world!");
-        });
-    }
-}
-```
-
-The `@FXML` tag isn't only used on `initialize()` and for denoting attributes for Nodes that have `fx:id`s. Suppose we added a method which performed the same action defined in `button.setOnAction()` above:
-
-*ControllerClass.java*
-```java
-package org.example;
-
-public class ControllerClass {
-    @FXML
-    private Button button;
-
-    @FXML
-    protected void initialize() {
-      // now empty
-    }
-    
-    @FXML
-    private void printAction() {
-      System.out.println("Hello World!");
-    }
-}
-```
-*controller-class.fxml*
-```xml
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.ControllerClass">
-  <children>
-    <Button fx:id="button" text="Hello World" onAction="#printAction"/>
-  </children>
-</VBox>
-```
-Now, we don't have to define the button's behavior after it's been loaded. We pre-defined the behavior as `printAction()`, then added the `onAction` attribute in the FXML. When the button's `onAction` event is triggered, it will call `printAction()`. We don't even have to define an `initialize()` method at this point. The more you can define in FXML, the more that an FXMLLoader can do for you, and the less code you have to write.
 
 ### <a name="fxmlLoader"></a>FXMLLoader
-The FXMLLoader class is responsible for turning FXML specifications into Java objects. It reads the hierarchy of Nodes defined in the FXML to build a scene graph, and injects Nodes into their appropriate fields in a controller, if applicable. There are three "fx" constructs that will be discussed in this exercise. Don't worry too much about understanding their usages completely right now; they'll be shown in more detail later.
+The FXMLLoader class is responsible for turning FXML specifications into Java objects. It reads the hierarchy of Nodes defined in an FXML file to build a scene graph, and injects Nodes into their appropriate fields in a controller, if applicable. There are three "fx" constructs used in this exercise:
 
-- `fx:controller` is used to tell FXMLLoader that it needs to construct an instance of a controller class, and is an attribute of the root node. A controller is not necessary to load the FXML (unless you want to do anything remotely interesting). It's also possible to [supply the FXMLLoader with a controller instance](#customControls) instead of relying on the FXMLLoader to construct one itself, in which case there isn't a need to define `fx:controller`.
-- Already discussed some in [Controllers](#controllers), `fx:id` supplies the name of an injectable field in a corresponding controller class to a node defined in the FXML. 
-- `fx:root` is a tag that is used to reference a previously defined root element, and is only used as the root node of an FXML file. If `fx:root` is used, then a root Node will have to be supplied to the FXMLLoader. This tag is typically used when defining [custom controls](#customControls) in FXML.
+- `fx:controller` is used to tell FXMLLoader that it needs to construct an instance of a controller class, and is an attribute of the root node. It's also possible to [supply the FXMLLoader with a controller instance](#customControls) instead of relying on the FXMLLoader to construct one itself, in which case there isn't a need to define `fx:controller`.
+- `fx:id` supplies the name of an injectable field in a corresponding controller class to a node defined in the FXML. 
+- `fx:root` is a tag that can be used as the root node of the FXML file, and represents an external node that has been provided to an FXMLLoader. This tag is typically used when defining [custom controls](#customControls) in FXML.
 
 #### <a name="staticLoad"></a>Calling FXMLLoader.load()
 The simplest way to load an FXML file is by using FXMLLoader's static `load()` method. An FXMLLoader must be given the location of the FXML resource file as a URL. This is most easily done with `getClass().getResource("my-file.fxml")`. When an FXML file is loaded, the following happens:
@@ -274,7 +155,7 @@ The simplest way to load an FXML file is by using FXMLLoader's static `load()` m
 1. The FXML file is loaded from a location relative to the loading class.
 2. The FXMLLoader follows the FXML document to build a scene graph out of JavaFX Nodes. If no root node has been supplied (via `setRoot()`, in FXMLLoader objects), the FXMLLoader treats the outermost-defined Node from the document as the root node.
 3. If a controller class has been specified (via `fx:controller`), the FXMLLoader constructs a new instance of that class to act as the controller. If a controller object has been supplied (via `setController()`, in FXMLLoader objects), the FXMLLoader simply uses that object.
-    - *Side Note:* There should not be a controller class defined via `fx:controller` and a controller object supplied via `setController()` at the same time. An exception will be thrown if a controller already exists.
+    - *Note:* An exception will be thrown if you call `setController()` when `fx:controller` is already defined in FXML.
 4. If a controller exists and has injectable fields for certain Nodes, the appropriate Nodes are injected into those fields (based on their `fx:id`) to tie in behavior from the controller.
 5. Once all relevant Nodes are injected into the controller, the FXMLLoader calls that controller's overridden `initialize()` method (discussed further in [Controllers](#controllers)). 
 6. The `load()` method will return the root Node, with all children appropriately loaded and tied to their behavior specified in the controller class (if applicable).
@@ -304,12 +185,88 @@ try {
   throw new RuntimeException(e);
 }
 ```
-Here we have access to both the root node of the scene graph and the controller instance for that scene graph. Because we can access the controller object through `getController()`, we can call setters or other public methods in the controller class, or bind properties to public properties of in the controller. The controller isn't constructed until `load()` is called, so calling `getController()` before then will throw an Exception.
+Here we have access to both the root node of the scene graph and the controller instance for that scene graph. Because we can access the controller object through `getController()`, we can call public methods in the controller class, or bind properties to public properties of the controller. The controller isn't constructed until `load()` is called, so calling `getController()` before then will throw an Exception.
 
-Unlike the static `load()`, FXMLLoader's instance `load()` will return the same instance of the root for each subsequent call to it. Likewise, after the FXMLLoader is loaded for the first time, each call to `getController()` will return the same instance of the controller. This is good, in many contexts. But what if you want to load multiple instances from the same FXML file? There are a few ways to manage that:
+Unlike the static `load()`, FXMLLoader's instance `load()` will return the same instance of the root for each subsequent call to it, instead of creating a new root each time. Likewise, after the FXMLLoader is loaded for the first time, each call to `getController()` will return the same controller instance. But what if you want to load multiple instances from the same FXML file? There are a few ways to accomplish that:
 1. Declare separate instances of FXMLLoader. (bad)
 2. When you want new instances of the root and controller, use `setRoot()` to set the root to `null`, and do the same for the controller with `setController()`, before calling `load()` again. (better) 
 3.  If you're going to be creating that many instances, you may as well create an FXML-defined custom control class.
+
+### <a name="controllers"></a>Controllers
+Defining a scene graph through FXML only gives us some nice-looking controls with their default behavior. If you want to be able to programmatically define the behavior for or change the appearance of any of the controls, you can write a controller class. A controller class has fields that are injected with Nodes once an FXML document is loaded, based on their corresponding `fx:id`. For example, we might have an FXML file like this:
+
+*controller-class.fxml*
+```xml
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.ControllerClass">
+  <children>
+    <Button fx:id="button" text="Hello World"/>
+  </children>
+</VBox>
+```
+On the first line, the `fx:controller` attribute of the root node tells an FXMLLoader to use an instance of ControllerClass as a controller. The FXMLLoader will start by calling the no-arg constructor of the specified class to obtain an instance. Then, it will inject nodes that have an `fx:id` defined into controller fields of the same name. In this example, there's a button with the `fx:id` "button", so an instance of `Button` will be injected into the field called "button" of the controller:
+
+*ControllerClass.java*
+```java
+package org.example;
+
+public class ControllerClass {
+    public Button button;
+
+    public void initialize() {
+        button.setOnAction(action -> {
+                System.out.println("Hello World!");
+        });
+    }
+}
+```
+Notice the `initialize()` method. This is called by an FXMLLoader once it is finished injecting Nodes into the controller. This is your opportunity to apply any settings or behavior not specified in the FXML file to the controls. In this example, the behavior of the button is defined so that it prints "Hello World!" when pressed.
+
+It's important to note that the constructor is called *before* the initialize method, so any attributes that correspond to FXML-defined controls (such as "button") haven't been loaded by the time the constructor is called, and therefore can't be referenced from inside the constructor. Wait to interact with any FXML-defined attributes until the `initialize()` method.
+
+We've declared both the Button attribute and the initialize method as public. If they weren't, the fields wouldn't be visible to the FXMLLoader. However, this can pose some concerns when it comes to information hiding. To make the things a little more secure, while keeping the fields visible to FXMLLoader, we can annotate them with the [`@FXML`](https://docs.oracle.com/javase/8/javafx/api/javafx/fxml/doc-files/introduction_to_fxml.html#fxml_annotation) tag.
+
+*ControllerClass.java*
+```java
+package org.example;
+
+public class ControllerClass {
+    @FXML
+    private Button button;
+
+    @FXML
+    protected void initialize() {
+        button.setOnAction(action -> {
+                System.out.println("Hello world!");
+        });
+    }
+}
+```
+
+In this case, the only thing that we're doing in `initialize()` is setting the action of `button`. We can replace this call by defining a method that performs the action, annotating it with `@FXML` to expose it to an FXMLLoader, and setting the `onAction` attribute of the Button defined in our FXML. Now, we can get rid of `initialize()` entirely:
+
+*ControllerClass.java*
+```java
+package org.example;
+
+public class ControllerClass {
+    @FXML
+    private Button button;
+    
+    @FXML
+    private void printAction() {
+      System.out.println("Hello World!");
+    }
+}
+```
+*controller-class.fxml*
+```xml
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.ControllerClass">
+  <children>
+    <Button fx:id="button" text="Hello World" onAction="#printAction"/>
+  </children>
+</VBox>
+```
+The more you can define in FXML, the more that an FXMLLoader can do for you.
 
 #### <a name="customControl"></a>Creating an FXML-defined Custom Control
 These two code blocks represent a custom control, which can be normally instantiated by its constructor without having to use FXMLLoader. In FXML, we've defined this control as being a VBox with two children: a TextField, and a ColorPicker. In Java, our controller class extends VBox, because the instance of the controller will also act as the instance of the root node. But if you look at the FXML, the root node is defined with the `fx:root` tag, not one for VBox.
@@ -351,8 +308,35 @@ The `type` attribute of `fx:root` is set to the VBox class, so the tag is treate
 
 In the custom control's constructor, we create an instance of FXMLLoader. Then, instead of *getting* the root node and controller from the FXML file, we *set* the root node and controller to be the newly created object. Finally, a call to `load()` creates the scene graph and injects nodes with an `fx:id` into the fields we've declared for them.
 
+#### <a name="bindControls"></a>Binding Controls
+Let's pretend that the address property that we [declared earlier](#addressExample) is an attribute of a controller class for an FXML-defined view containing a TextField. We want to bind the address property to that TextField so that it always reflects what the user has typed in, and if we were to programmatically change the value of the address property, we would want that the text field to be updated. So, we bind the address property to the TextField's textProperty: `address.bindBidirectional(textField.textProperty())`. However, trying to bind the address property as it's currently defined would cause a small problem in this case. The address property is instantiated when the object is constructed, but the controller won't have access to the FXML-defined TextField until the FXML document is fully loaded (more on that under "Controllers"), so we can't bind the two properties until then. This means that from the time that the address property is instantiated until the point that the document is loaded, the value of the property may not be correct.
+
+<a name="propertyControl"></a>We can solve these problems by using bidirectional binding and tweaking the standard definition a bit to allow for lazy instantiation of the property:
+```java
+@FXML
+private TextField addressTextField;
+
+private StringProperty address;
+public StringProperty addressProperty() {
+  if (address == null) {
+    address = new SimpleStringProperty();
+    address.bindBidirectional(addressTextField.textProperty());
+  }
+  return address;
+}
+public final String getAddress() {
+  return addressProperty().get();
+}
+public final void setAddress(String s) {
+  addressProperty().set(s);
+}
+```
+In this version, the address property isn't instantiated until the first time `addressProperty()` is called. When it is instantiated, it is immediately bound to the textProperty() of `addressTextField` (and vice versa, through bidirectional binding). The insides of the value's getter and setter have changed slightly; instead of accessing `address` directly, they access the value returned by `addressProperty()`, to make sure that the property is first instantiated if it hasn't been already.
+
 ## <a name="theExercise"></a>The Actual Exercise
-Now for the part where we actually do things. We'll be working in three .java files (found in `src/.../fxmlexercise/`):
+Now for the part where we actually do things. We'll start out by creating a small controller with a few controls, which I'll refer to as a "selector" controller. Then, we'll load a couple of selector instances into what I'll call the "frame" controller, and use some property binding to bind controls in the frame to properties of the selector instances. Finally, we'll convert the SelectorController class into a custom control that can be used like JavaFX's built-in controls.
+
+We'll be working in three .java files (found in `src/.../fxmlexercise/`):
 - Main.java
 - SelectorController.java
 - FrameController.java
@@ -360,12 +344,10 @@ Now for the part where we actually do things. We'll be working in three .java fi
 - selector.fxml
 - frame.fxml
 
-Completed versions of these files can be found in `fxmlexercise.completed`, and can be used as a reference while you fill in the empty ones. Run CompletedMain.java to see the finished program and get a sense of what to build towards. Keep in mind, though, that all of them are written as if the entire exercise was completed. At times, the exercise will ask you to do something, then replace it with a different version later. Because of this, copy-and-pasting sections of code from the completed files as you go may not work in some places where the approach has been updated.
-
-*Side Note:* I didn't write this exercise to be a homework assignment, it's meant to be more like a walkthrough, so looking at and adopting the answers doesn't matter. However, I mention that copy-and-pasting parts of the solutions may not work in case anyone is going through the exercise relying on it. Any code that isn't provided should be very easy to figure out. If it isn't, then my walkthrough isn't clear enough, so please reach out with questions and suggestions.
+Completed versions of these files can be found in `fxmlexercise.completed`, and can be used as a reference while you fill in the empty ones. Execute the command `./gradlew runCompleted` (or `gradlew runCompleted` on Windows) in the root of the project to see the finished program and get a sense of what to build towards.
 
 ### <a name="createFXML"></a>Creating the FXML Files (Optional)
-The provided FXML files in `src/main/resources/` can be used to complete the exercise, in which case you should skip to [Main.java](#mainJava). However, if you want an extra challenge, or some practice using SceneBuilder, use the following descriptions to create your own. Since this isn't an exercise in design, layout doesn't necessarily matter, as long as the files have the required controls. If you make your own, remember to put them in `resources/fxmlexercise`.
+The provided FXML files in `src/main/resources/` can be used to complete the exercise, in which case you should skip to the section for [Main.java](#mainJava). However, if you want an extra challenge, or some practice using SceneBuilder, use the following descriptions to create your own. Since this isn't an exercise in design, layout doesn't matter, as long as the files have the required controls. If you make your own, remember to put them in `resources/fxmlexercise`.
 
 #### <a name="selectorInfo"></a>selector.fxml
 This file is the simpler of the two. It will need two [TextFields](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TextField.html), two [ColorPickers](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/ColorPicker.html), and one [Button](https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Button.html) (all found under "Controls" in the left sidebar of SceneBuilder). Each TextField corresponds to a ColorPicker, so a user can type in a custom name to describe the color they've chosen. The Button will later print the name and value of the selected colors, so the Button's text should say as much.
@@ -378,7 +360,7 @@ Each AnchorPane will hold a "selector" in it. However, we'll be adding them in p
 Each Label will be paired with a Rectangle. We'll be changing each Label's text to reflect a custom color name in a selector, and we'll be changing each corresponding Rectangle's fill color to match the selected color in a ColorPicker. Two Label/Rectangle pairs will be bound to each "selector".
 
 ### <a name="mainJava"></a>Main.java
-You won't have to do much with this class. It's fairly standard for a JavaFX application.
+This main class is fairly standard for a JavaFX application.
 ```java
 package fxmlexercise.starthere;
 
@@ -412,7 +394,7 @@ After that, we assign the return value of FXMLLoader's static `load()` method to
 `primaryStage.setScene(new Scene(root))` sets the Scene of the primary Stage to a new instance of Scene, using `root` as the root node.
 
 ### <a name="selectorJava"></a>SelectorController.java
-1. We'll start by creating attributes for the controls. It's not necessary to create one for every single Node in the FXML file, just for the controls that we want to access in the controller. Declare attributes for each TextField, each ColorPicker, and the Button. Remember to include the @FXML tags, like this:
+1. We'll start by creating attributes for the controls. It's not necessary to create one for every single Node in the FXML file, just for the controls with `fx:id`s defined, which we'll be accessing in the controller. Declare attributes for each TextField, each ColorPicker, and the Button. Remember to include the @FXML tags, like this:
 ```java
 @FXML
 private Button printButton;
