@@ -30,6 +30,14 @@ public class CompletedFrameController extends VBox {
     //                    METHODS                    //
     //***********************************************//
 
+    @FXML private void saveAction() {
+        // Construct instance of FrameState, then serialize it.
+    }
+
+    @FXML private void loadAction() {
+        // Select serialized file, deserialize it, then apply the state to this CompletedFrameController
+    }
+
     @FXML private void printButtonAction(ActionEvent e) {
 
         /*

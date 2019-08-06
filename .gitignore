@@ -9,6 +9,7 @@ nbactions.xml
 # Intellij
 .idea/
 *.iml
+out/
 
 # TestFX
 screenshot*.png

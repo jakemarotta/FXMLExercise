@@ -16,6 +16,6 @@ dependencies {
 }
 
 task runCompleted(type: JavaExec) {
-    main = 'fxmlexercise.Main'
+    main = 'fxmlexercise.completed.CompletedMain'
     classpath = sourceSets.main.runtimeClasspath
 }
