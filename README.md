@@ -111,8 +111,8 @@ private ObjectProperty<Color> propertyA = new SimpleObjectProperty();
 private ObjectProperty<Color> propertyB = new SimpleObjectProperty();
 
 public static void bindProperties() {
-  p2.bind(propertyA);  // propertyB reflects changes made to propertyA
-  p2.bindBidirectional(p1); // both propertyA and propertyB reflect changes made to each other
+  propertyB.bind(propertyA);  // propertyB reflects changes made to propertyA
+  propertyB.bindBidirectional(propertyA); // both propertyA and propertyB reflect changes made to each other
 }
 ```
 `propertyA` and `propertyB` above are both ObjectProperties with values of type Color. If we want `propertyB` to always have the same value as `propertyA`, we can simply write `propertyB.bind(propertyA)`. This has three notable effects:
