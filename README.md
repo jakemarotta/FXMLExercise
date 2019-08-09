@@ -5,12 +5,10 @@ If you aren't familiar with JavaFX, or some of the controls mentioned, Jenkov Ap
 
 ## Contents
 - [Requirements](#requirements)
-- [Project Structure](#structure)
 - [Background](#background)
   - [Declaring JavaFX Properties](#properties)
     - [Bindings](#bindings)
     - [Binding Different Values](#bindDiff)
-  - [Scene Graphs](#sceneGraphs)
   - [FXMLLoader](#fxmlLoader)
     - [Calling FXMLLoader.load()](#staticLoad)
     - [Using an Instance of FXMLLoader](#instanceLoad)
@@ -54,7 +52,8 @@ class Employee {
 }
 ```
 Using this approach, any time we set the preferred name of the Employee, we also have to remember set the name of the Nametag. Alternatively, we could use JavaFX properties:
-<a name="addressExample"></a>```java
+<a name="addressExample"></a>
+```java
 class Employee {
 
   private StringProperty preferredName;
@@ -107,13 +106,11 @@ public ReadOnlyStringProperty addressProperty() {
 #### <a name="bindings"></a>Types of Bindings
 There are two basic ways to bind a property to another property:
 ```java
-private ObjectProperty<Color> propertyA = new SimpleObjectProperty();
-private ObjectProperty<Color> propertyB = new SimpleObjectProperty();
+ObjectProperty<Color> propertyA = new SimpleObjectProperty();
+ObjectProperty<Color> propertyB = new SimpleObjectProperty();
 
-public static void bindProperties() {
-  propertyB.bind(propertyA);  // propertyB reflects changes made to propertyA
-  propertyB.bindBidirectional(propertyA); // both propertyA and propertyB reflect changes made to each other
-}
+propertyB.bind(propertyA);  // propertyB reflects changes made to propertyA
+propertyB.bindBidirectional(propertyA); // both propertyA and propertyB reflect changes made to each other
 ```
 `propertyA` and `propertyB` above are both ObjectProperties with values of type Color. If we want `propertyB` to always have the same value as `propertyA`, we can simply write `propertyB.bind(propertyA)`. This has three notable effects:
 1. The value of `propertyB` is set to the current value of `propertyA`.
