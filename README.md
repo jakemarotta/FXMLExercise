@@ -420,7 +420,7 @@ public final void setColorName1(String s) {
 3. Next, finish the `printButtonAction()` method. It only needs to print out each custom color name and each color in a way that makes sense.
 
 
-4. Now switch to your selector FXML file in SceneBuilder. First, you'll need to set the controller class for the FXML file. Under the "Controller" menu in the bottom-right of SceneBuilder, type "fxmlexercise.SelectorController" in the text field labelled "Controller class".
+4. Now switch to your selector FXML file in SceneBuilder. First, you'll need to set the controller class for the FXML file. Under the "Controller" menu in the bottom-left of SceneBuilder, type "fxmlexercise.SelectorController" in the text field labelled "Controller class".
     - *Side Note:* In my opnion, one of the shortcomings of SceneBuilder is that you can't specify a project directory. If your controller class and FXML file were in the same directory, you'd be able to see a drop-down list of available controller classes when you clicked on the text field. Once you'd specified the controller class, the same would happen when you define `fx:id`s. However, this is not conducive to Maven's standard directory layout, and your controller class should be in a different directory. It will still work, you'll just have to be careful to type the names correctly, and SceneBuilder will complain that it can't find fields of the same name. 
 
 
@@ -463,7 +463,7 @@ protected void initialize() {
 0. Inside of Main.java, change the resource location from the name of your selector FXML file to the name of your frame FXML file, so that FXMLLoader loads a FrameController instead of a SelectorController.
 
 
-1. Again, declare each of the necessary attributes from the FXML file. Each of the AnchorPanes, Labels. Rectangles, and buttons will need `@FXML` tags. 
+1. Again, declare each of the necessary attributes from the FXML file. Each of the AnchorPanes, Labels, Rectangles, and Buttons will need `@FXML` tags. 
 
 
 2. Declare two more attributes, both of type SelectorController, without `@FXML` tags.
@@ -505,7 +505,7 @@ protected void initialize() {
     // 4.
     Parent root = fxmlLoader.load();  // load() returns the scene graph as a Node, which must be a Parent
     this.selectorOne = fxmlLoader.getController(); // getController() returns the controller object
-    anchorPaneOne.getChildren().add(root);  // add the Node to the AnchorPane
+    this.anchorPaneOne.getChildren().add(root);  // add the Node to the AnchorPane
     //5.
     fxmlLoader.setRoot(null);
     fxmlLoader.setController(null);
